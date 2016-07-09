@@ -12,9 +12,9 @@ with open('./secret_key.txt') as f:
     SECRET_KEY = f.read().strip()
 
 if 'ENVIRONMENT' in os.environ and os.environ['ENVIRONMENT'] == "production":
-    DEBUG=True
-else:
     DEBUG=False
+else:
+    DEBUG=True
 
 ALLOWED_HOSTS = []
 
