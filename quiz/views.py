@@ -5,12 +5,20 @@ from quiz.models import Trivia, QuestionAndAnswer
 from random import randint
 
 def result(request):
+    """
+    POST requests are sent here after a trivia item is either responded to
+    correctly or missed.
+    """
+    # TODO: Process results.
     name = request.POST.get("name")
     trivia = Trivia.objects.get(name=name)
     print(trivia.name, request.user)
     return JsonResponse({})
 
 def random(request):
+    """
+    Responds with a randomly selected trivia item.
+    """
     category = request.GET.get('category')
     subcategory = request.GET.get('subcategory') or "All"
     if category is None or category == "All":
@@ -32,9 +40,15 @@ def random(request):
 
 @login_required
 def quizzer(request):
+    """
+    Responds with an HTML page for the quizzer program.
+    """
     context = {}
     return render(request, 'quizzer/quizzer.html', context)
 
 def index(request):
+    """
+    Home page.
+    """
     context = {}
     return render(request, 'base.html', context)

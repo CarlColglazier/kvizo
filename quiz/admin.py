@@ -7,6 +7,7 @@ class QuestionAndAnswerInline(admin.StackedInline):
     extra = 0
 
 class TriviaAdmin(admin.ModelAdmin):
+    """Include attached questions and answers along with the trivia item."""
     inlines = [QuestionAndAnswerInline]
     list_display = ('name','category',)
     search_fields = ('name',)
