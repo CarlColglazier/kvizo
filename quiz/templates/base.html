@@ -1,0 +1,38 @@
+{% load staticfiles %}
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Kvizo</title>
+  <meta name="description" content="Kvizo - The Quiz Training Program">
+  <meta name="author" content="Carl Colglazier">
+
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+</head>
+
+<body>
+  <div class="container">
+    <header>Kvizo - The Quiz Training Program</header>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        {% if user.is_anonymous %}
+        <li><a href="{% url 'django.contrib.auth.views.login' %}">login</a></li>
+        {% else %}
+        <li><a href="/quizzer">Quizzer</a></li>
+        <li><a href="{% url 'django.contrib.auth.views.logout' %}?next=/">logout</a></li>
+        {% endif %}
+      </ul>
+      
+    </nav>
+    <content>
+      {% block content %}
+      {% endblock %}
+    </content>
+  </div>
+  <script src="/static/js/scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+from django.contrib import admin
+
+from .models import Trivia, QuestionAndAnswer
+
+class QuestionAndAnswerInline(admin.StackedInline):
+    model = QuestionAndAnswer
+    extra = 0
+
+class TriviaAdmin(admin.ModelAdmin):
+    inlines = [QuestionAndAnswerInline]
+    list_display = ('name','category',)
+    search_fields = ('name',)
+    
+admin.site.register(Trivia, TriviaAdmin)
+

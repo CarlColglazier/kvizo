@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% csrf_token %}
+<p><button id="next_clue">Start</button>
+  <select id="category">
+    <option>All</option>
+    <option>Literature</option>
+    <option>History</option>
+    <option>Science</option>
+    <option>Fine Arts</option>
+    <option>Geography</option>
+    <option>Mythology</option>
+    <option>Philosophy</option>
+    <option>Social Science</option>
+    <option>Current Events</option>
+    <option>Trash</option>
+  </select>
+  <select id="subcategory">
+    <option>All</option>
+  </select>
+</p>
+<div id="question-display">
+  <p id="response" class="invisible">
+    <button id="missed">Missed</button>
+    <button id="correct">Correct</button>
+  </p>
+  <p id="metadata"></p>
+  <p id="question">Click next to load a question.</p>
+  <p id="answer"></p>
+  <p
+</div>
+{% endblock %}
