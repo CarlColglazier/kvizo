@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Trivia(models.Model):
@@ -52,5 +53,18 @@ class QuestionAndAnswer(models.Model):
         dic['answer'] = self.answer
         return dic
 
-# TODO
-#class Response(models.Model):
+    def words(self):
+        """Number of words in the question. Used to determine buzz time."""
+        return len(self.question_text.split(" "))
+
+class Response(models.Model):
+    """
+    A Response is logged whenever a Trivia item is reviewed.
+    """
+    trivia=models.ForeignKey(Trivia, on_delete=models.CASCADE)
+    user=models.ForeignKey(User)
+    points=models.SmallIntegerField(default=0)
+    buzz_point=models.PositiveSmallIntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    
+    
