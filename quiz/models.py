@@ -57,6 +57,11 @@ class QuestionAndAnswer(models.Model):
         """Number of words in the question. Used to determine buzz time."""
         return len(self.question_text.split(" "))
 
+    def bonus_value(self):
+        words = self.question_text.split(" ")
+        index = words.index("(*)") if "(*)" in words else -1
+        return self.words() - index
+
 class Response(models.Model):
     """
     A Response is logged whenever a Trivia item is reviewed.

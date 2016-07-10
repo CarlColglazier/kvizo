@@ -23,14 +23,14 @@ function Trivia() {
     this.subcategory = "All";
     this.complete = false;
     var state = {
-        animate: 2
+        animate: 2,
+        buzz_points: 0
     };
     this.state = function() {
         return state;
     }
 
     this.iterate_animation_state = function() {
-        console.log(state.animate);
         if (state.animate > -1 && state.animate < 4) {
             switch(state.animate) {
             case 0:
@@ -74,6 +74,8 @@ function Trivia() {
         var url = '/api/quiz/result';
         var params = "name=" + current.result.name;
         params += "&result=" + result;
+        params += "&buzz_points=" + state.buzz_points;
+        console.log(params);
         request.open('POST', url, true); 
         request.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
         request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -87,13 +89,13 @@ function Trivia() {
 
     this.correct = function() {
         console.log("CORRECT!");
-        this.result_post("correct");
+        this.result_post(true);
         this.random();
     }
 
     this.missed = function() {
         console.log("MISSED!");
-        this.result_post("missed");
+        this.result_post(false);
         this.random();
     }
     
@@ -130,18 +132,20 @@ function Trivia() {
 
     function animate(question) {
         var offset = 60000 / wpm;
-        var current_delay = 0;
+        animation_text = [];
         animation_text = question.text.split(" ");
         var len = animation_text.length;
+        state.buzz_points = len;
         window.setTimeout(function() {
             if (t.state().animate == 0 && animation_text.length == 0) {
                 t.iterate_animation_state();
             }
-        }, offset * (len + 1));
+        }, offset * len + 3000);
         for (word in animation_text) {
             window.setTimeout(function() {
                 if (state.animate == 0 && animation_text.length > 0) {
                     document.getElementById('question').textContent += " " + animation_text.shift();
+                    state.buzz_points--;
                 }
             }, offset * word);
         }
@@ -151,9 +155,7 @@ function Trivia() {
 var parser = document.createElement('a');
 parser.href = document.URL;
 if (parser.pathname == "/quizzer") {
-    console.info("Quizzer.");
     var t = new Trivia();
-    //t.random();
     document.getElementById('next_clue').addEventListener('click', function(e) {
         t.random();
     });

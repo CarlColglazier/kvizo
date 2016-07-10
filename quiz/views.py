@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from quiz.models import Trivia, QuestionAndAnswer
+from quiz.models import Trivia, QuestionAndAnswer, Response
 from random import randint
 
 def result(request):
@@ -11,8 +11,35 @@ def result(request):
     """
     # TODO: Process results.
     name = request.POST.get("name")
+    buzz_point = int(request.POST.get("buzz_points"))
+    result = request.POST.get("result")
     trivia = Trivia.objects.get(name=name)
-    print(trivia.name, request.user)
+    if trivia.is_bonus:
+        if result == "true":
+            points =  10
+        else:
+            points = 0
+    else:
+        if buzz_point > 0:
+            if result == "false":
+                points = -5
+            else:
+                if buzz_point > trivia.questions()[0].bonus_value():
+                    points = 20
+                else:
+                    points = 10
+        else:
+            if result == "true":
+                points = 10
+            if result == "false":
+                points = 0
+    user = request.user
+    Response.objects.create(
+        trivia = trivia,
+        user = user,
+        buzz_point = buzz_point,
+        points = points)
+    #TODO: Handle response.
     return JsonResponse({})
 
 def random(request):

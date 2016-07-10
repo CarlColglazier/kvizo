@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Trivia, QuestionAndAnswer
+from .models import Trivia, QuestionAndAnswer, Response
 
 class QuestionAndAnswerInline(admin.StackedInline):
     model = QuestionAndAnswer
@@ -13,4 +13,4 @@ class TriviaAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     
 admin.site.register(Trivia, TriviaAdmin)
-
+admin.site.register(Response)
