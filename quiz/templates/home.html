@@ -1,24 +1,10 @@
-<!doctype html>
+{% extends 'base.html' %}
 
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-
-  <title>Kvizo</title>
-  <meta name="description" content="Kvizo - The Quiz Training Program">
-  <meta name="author" content="Carl Colglazier">
-
-  <link rel="stylesheet" href="/static/css/styles.css?v=1.0">
-
-</head>
-
-<body>
-  <div class="container">
-    <header>Kvizo - The Quiz Training Program</header>
-    <nav>
-      <ul><li><a href="/">Home</a></li></ul>
-    </nav>
-  </div>
-  <!--<script src="js/scripts.js"></script>-->
-</body>
-</html>
+{% block content %}
+<table><tbody>
+    <th><td>Ratio</td><td>Correct</td><td>Total</td></th>
+    {% for r in stats %}
+    <tr><td>{{r.category}}</td><td>{{r.ratio}}</td><td>{{r.correct}}</td><td>{{r.total}}</td></tr>
+    {% endfor %}
+</tbody></table>
+{% endblock %}

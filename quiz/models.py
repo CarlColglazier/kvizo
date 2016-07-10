@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class Trivia(models.Model):
     """
     Trivia models a trivia item such as a tossup or bonus.
@@ -71,5 +70,5 @@ class Response(models.Model):
     points=models.SmallIntegerField(default=0)
     buzz_point=models.PositiveSmallIntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
-    
-    
+
+        

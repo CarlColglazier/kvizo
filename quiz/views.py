@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from quiz.models import Trivia, QuestionAndAnswer, Response
 from random import randint
+from django.db.models import Count
 
 def result(request):
     """
@@ -77,5 +78,30 @@ def index(request):
     """
     Home page.
     """
-    context = {}
-    return render(request, 'base.html', context)
+    res_all = [x['trivia_id'] for x in Response.objects.values('trivia_id')]
+    all = Trivia.objects.filter(pk__in=res_all).values('category').annotate(count=Count('category'))
+    res_cor = [x['trivia_id'] for x in Response.objects.filter(points__gt=0).values('trivia_id')]
+    cor = Trivia.objects.filter(pk__in=res_cor).values('category').annotate(count=Count('category'))
+    correct = {}
+    ratios = {}
+    totals = {}
+    r_list = []
+    for o in cor:
+        correct[o['category']] = o['count']
+    for o in all:
+        c = 0
+        if o['category'] in correct:
+            c = correct[o['category']]
+            ratios[o['category']] = 1.0 * correct[o['category']] / o['count']
+        else:
+            ratios[o['category']] = 0.0
+        r_list.append({
+            "category": o['category'],
+            "ratio": ratios[o['category']],
+            "correct": c,
+            "total": o['count']})
+    context = {
+        "stats": sorted(r_list, key=lambda x: x['ratio'], reverse=True)
+    }
+    print(context)
+    return render(request, 'home.html', context)
