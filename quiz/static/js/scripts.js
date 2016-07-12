@@ -75,7 +75,6 @@ function Trivia() {
         var params = "name=" + current.result.name;
         params += "&result=" + result;
         params += "&buzz_points=" + state.buzz_points;
-        console.log(params);
         request.open('POST', url, true); 
         request.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
         request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -88,13 +87,11 @@ function Trivia() {
     }
 
     this.correct = function() {
-        console.log("CORRECT!");
         this.result_post(true);
         this.random();
     }
 
     this.missed = function() {
-        console.log("MISSED!");
         this.result_post(false);
         this.random();
     }
@@ -124,10 +121,8 @@ function Trivia() {
         }
         a.push("ID: " + clue.name);
         document.getElementById('metadata').textContent = a.join(" | ");
-        //document.getElementById('question').textContent = clue.questions[0].text;
         document.getElementById('question').textContent = "";
         animate(clue.questions[0]);
-        //document.getElementById('answer').textContent = clue.questions[0].answer;
     }
 
     function animate(question) {
@@ -152,13 +147,62 @@ function Trivia() {
     }
 }
 
+function Search(term) {
+    this.term = term;
+    var results;
+    this.query = function(callback) {
+        var request = new XMLHttpRequest();
+        var url = '/api/quiz/search';
+        url += "?term=" + this.term;
+        request.open('GET', url, true);
+        request.onreadystatechange = function() {
+            if(this.readyState === 4) {
+                results = JSON.parse(this.response);
+                callback(results);
+            }
+        }
+        request.send(null);
+    }
+
+    this.to_html = function() {
+        var r = document.getElementById("results");
+        while (r.firstChild) {
+            r.removeChild(r.firstChild);
+        }
+        if (results && results.error == null && results.result.items.length > 0) {
+            results.result.items.forEach(function(c) {
+                var div = document.createElement("div");
+                var meta = document.createElement("p");
+                meta.innerText = "ID: " + c.name + " | " + c.category + " | " + c.subcategory;
+                div.appendChild(meta);
+                var w = document.createElement("div");
+                c.questions.forEach(function(z) {
+                    var q = document.createElement("p");
+                    q.innerText = "Question: " + z.text;
+                    w.appendChild(q);
+                    var a = document.createElement("p");
+                    a.innerText = "Answer: " + z.answer;
+                    w.appendChild(a);
+                });
+                r.appendChild(div);
+                r.appendChild(w);
+            });
+        } else {
+            var no = document.createElement("p");
+            no.innerText = "No Results found";
+            r.appendChild(no);
+        }
+    }
+
+}
+
 var parser = document.createElement('a');
 parser.href = document.URL;
 if (parser.pathname == "/quizzer") {
     var t = new Trivia();
     document.getElementById('next_clue').addEventListener('click', function(e) {
         t.random();
-    });
+2    });
     document.getElementById('subcategory').addEventListener('change', function(e) {
         t.subcategory = e.target.value;
     });
@@ -175,15 +219,6 @@ if (parser.pathname == "/quizzer") {
     document.getElementById('missed').addEventListener('click', t.missed);
     document.addEventListener('keypress', function(e) {
         switch (e.key) {
-            /*
-        case "n":
-            switch(t.state().animate) {
-            case 2:
-                t.random();
-                break;
-            }
-            //t.random();
-            break;*/
         case "k":
             if (t.state().animate == 2) {
                 t.correct();
@@ -199,6 +234,16 @@ if (parser.pathname == "/quizzer") {
                 t.iterate_animation_state();
             }
             break;
+        }
+    });
+} else if (parser.pathname == "/search") {
+    document.getElementById('search').addEventListener('keypress', function(e) {
+        if (e.key == "Enter") {
+            e.preventDefault();
+            s = new Search(e.target.value);
+            s.query(function(r) {
+                s.to_html();
+            });
         }
     });
 }

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% csrf_token %}
+<form>
+  <label> Search <input type="search" id="search" autocomplete="off" /></label>
+  <!--<input type="submit" />-->
+</form>
+<div id="results"></div>
+{% endblock %}
