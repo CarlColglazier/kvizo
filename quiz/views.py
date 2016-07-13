@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from quiz.models import Trivia, QuestionAndAnswer, Response
 from random import randint
 from django.db.models import Count, Q
+from difflib import SequenceMatcher
+
 
 def result(request):
     """
@@ -89,11 +91,30 @@ def search(request):
     regex = term + r'(?:\W|\p{P}|$)'
     query = QuestionAndAnswer.objects.filter(Q(answer__iregex=regex)|Q(question_text__iregex=regex))
     query = sorted(query, key=lambda x: term.lower() in x.question_text.lower())
+    entities = [x.named_entities() for x in query if term.lower() in x.answer.lower()]
+    named = {}
+    for en in entities:
+        for e in en:
+            if e in named:
+                named[e] += 1
+            else:
+                done = False
+                for k in named.keys():
+                    if SequenceMatcher(None, k, e).ratio() > 0.65:
+                        named[k] += 1
+                        done = True
+                        break
+                if done == False:
+                    named[e] = 0
+                #print(named.keys())
+    entities = sorted([x for x in named.items() if x[1] > 0], key=lambda x: x[1], reverse=True)
+    entities = [{"term": x[0], "num": x[1]} for x in entities]
     results = [x.parent.dictionary() for x in query]
     return JsonResponse({
         'error': None,
         'result': {
-            "items": results
+            "items": results,
+            "entities": entities
         }
     })
 

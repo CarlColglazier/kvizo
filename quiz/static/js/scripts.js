@@ -194,6 +194,26 @@ function Search(term) {
         }
     }
 
+    this.named_entities = function() {
+        var r = document.getElementById("named_entities");
+        while (r.firstChild) {
+            r.removeChild(r.firstChild);
+        }
+        if (results && results.error == null && results.result.entities.length > 0) {
+            var list = document.createElement("ol");
+            results.result.entities.forEach(function(e) {
+                var item = document.createElement("li");
+                item.innerText = e.term + " (" + e.num + ")";
+                list.appendChild(item);
+            });
+            r.appendChild(list);
+        } else {
+            var no = document.createElement("p");
+            no.innerText = "No named entities recognized.";
+            r.appendChild(no);
+        }
+    }
+
 }
 
 var parser = document.createElement('a');
@@ -243,6 +263,7 @@ if (parser.pathname == "/quizzer") {
             s = new Search(e.target.value);
             s.query(function(r) {
                 s.to_html();
+                s.named_entities();
             });
         }
     });

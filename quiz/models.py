@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+import string
+
+table = str.maketrans(string.punctuation, "                                ")
 
 class Trivia(models.Model):
     """
@@ -61,6 +64,49 @@ class QuestionAndAnswer(models.Model):
         index = words.index("(*)") if "(*)" in words else -1
         return self.words() - index
 
+    def named_entities(self):
+        """
+        Produces an array of named entities (i.e. people, battles, books) from
+        the question text. This is a rather naive algorithm which uses the
+        capitalization of works in the question to extract groups of capitalized
+        words. Since questions tend to have very similar formatting, this method
+        has good results in most cases.
+        """
+        phrases = []
+        phrase_words = ["of","at","the","v", "is", "to", "a", "an", "on", "de",
+                        "la", "from", "da", "el", "for", "by", "as", "that"]
+        banned = ["I"]
+        words = self.question_text.split()
+        current = None
+        for i in range(1, len(words)):
+            word = words[i].translate(table).strip()
+            if len(word) < 1:
+                    continue
+            if current == None:
+                if word[0].isupper() and not '.' in words[i-1] and not ',' in words[i-1]:
+                    current = word
+            else:
+                if (word[0].isupper() or word in phrase_words) and (len(words[i-1]) < 5 or ('.' not in words[i-1] and ',' not in words[i-1])):
+                    current += " " + word
+                else:
+                    if current not in banned:
+                        c = current.split()
+                        while c[-1] in phrase_words:
+                            c.pop()
+                        if len(c) > 0:
+                            phrases.append(" ".join(c))
+                    current = None
+        if current is not None:
+            if current not in banned:
+                c = current.split()
+                while c[-1] in phrase_words:
+                    c.pop()
+                    phrases.append(" ".join(c))
+                if len(c) > 0:
+                    phrases.append(current)
+        return phrases
+
+
 class Response(models.Model):
     """
     A Response is logged whenever a Trivia item is reviewed.
@@ -70,5 +116,3 @@ class Response(models.Model):
     points=models.SmallIntegerField(default=0)
     buzz_point=models.PositiveSmallIntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
-
-        
