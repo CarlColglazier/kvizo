@@ -75,10 +75,12 @@ class QuestionAndAnswer(models.Model):
         phrases = []
         phrase_words = ["of","at","the","v", "is", "to", "a", "an", "on", "de",
                         "la", "from", "da", "el", "for", "by", "as", "that"]
-        banned = ["I"]
+        banned = ["I", "This"]
         words = self.question_text.split()
         current = None
         for i in range(1, len(words)):
+            if words[i] == "(*)":
+                continue
             word = words[i].translate(table).strip()
             if len(word) < 1:
                     continue
@@ -94,7 +96,9 @@ class QuestionAndAnswer(models.Model):
                         while c[-1] in phrase_words:
                             c.pop()
                         if len(c) > 0:
-                            phrases.append(" ".join(c))
+                            a = " ".join(c)
+                            if a not in banned:
+                                phrases.append(a)
                     current = None
         if current is not None:
             if current not in banned:
@@ -103,7 +107,9 @@ class QuestionAndAnswer(models.Model):
                     c.pop()
                     phrases.append(" ".join(c))
                 if len(c) > 0:
-                    phrases.append(current)
+                    a = " ".join(c)
+                    if a not in banned:
+                        phrases.append(a)
         return phrases
 
 
