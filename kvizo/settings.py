@@ -16,7 +16,12 @@ if 'ENVIRONMENT' in os.environ and os.environ['ENVIRONMENT'] == "production":
 else:
     DEBUG=True
 
-ALLOWED_HOSTS = []
+if 'ALLOWED_HOST' in os.environ:
+    allowed = os.environ['ALLOWED_HOST']
+else:
+    allowed = '*'
+    
+ALLOWED_HOSTS = [allowed]
 
 
 # Application definition
