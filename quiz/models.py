@@ -10,9 +10,24 @@ class Trivia(models.Model):
     """
     category = models.CharField(max_length=20)
     subcategory = models.CharField(max_length=20)
-    name = models.IntegerField()
+    name = models.IntegerField(primary_key=True)
     date = models.DateField()
     is_bonus = models.BooleanField()
+    is_flagged = models.BooleanField(default=False)
+    OPEN = 'O'
+    COLLEGE = 'C'
+    HIGH_SCHOOL = 'H'
+    LEVELS = (
+        (OPEN, "Open"),
+        (COLLEGE, "College"),
+        (HIGH_SCHOOL, "High School"),
+    )
+    level = models.CharField(
+        max_length=1,
+        choices=LEVELS,
+        default=COLLEGE
+    )
+
 
     def __str__(self):
         return str(self.name)

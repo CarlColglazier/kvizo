@@ -90,3 +90,4 @@ ENV/
 
 secret_key.txt
 *.sqlite3
+*.csv
