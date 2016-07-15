@@ -57,8 +57,8 @@ class QuestionAndAnswer(models.Model):
     (where there are multiple questions and answers).
     """
     parent = models.ForeignKey(Trivia, on_delete=models.CASCADE)
-    question_text = models.TextField(max_length=800)
-    answer = models.CharField(max_length=100)
+    question_text = models.TextField(max_length=2000)
+    answer = models.CharField(max_length=250)
 
     def __str__(self):
         return str(self.parent)

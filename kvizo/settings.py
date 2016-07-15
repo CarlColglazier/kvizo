@@ -3,25 +3,19 @@ Django settings for kvizo project.
 """
 
 import os
+import dj_database_url
 
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-with open('./secret_key.txt') as f:
-    SECRET_KEY = f.read().strip()
+with open('./.env') as f:
+    if f.readline().strip == "on":
+        DEBUG=True
+    else:
+        DEBUG=False
+    SECRET_KEY = f.readline().strip()
+    database_url = f.readline().strip()
 
-if 'ENVIRONMENT' in os.environ and os.environ['ENVIRONMENT'] == "production":
-    DEBUG=False
-else:
-    DEBUG=True
-
-if 'ALLOWED_HOST' in os.environ:
-    allowed = os.environ['ALLOWED_HOST']
-else:
-    allowed = '*'
-    
-ALLOWED_HOSTS = [allowed]
+ALLOWED_HOSTS = [".carlcolglazier.com"]
 
 
 # Application definition
@@ -71,7 +65,12 @@ WSGI_APPLICATION = 'kvizo.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+    'default': dj_database_url.config(default=database_url),
+    'extra': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
@@ -118,3 +117,4 @@ STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")

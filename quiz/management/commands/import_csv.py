@@ -17,7 +17,7 @@ class Command(BaseCommand):
             i = 0
             next(reader) # skip header.
             for row in reader:
-                if len(row[3]) > 200 or len(row[2]) < 200 or len(row[2]) < 1 or len(row[3]) < 1:
+                if len(row) < 7 or len(row[3]) > 250 or len(row[2]) < 200 or len(row[2]) < 1 or len(row[3]) < 1 or len(row[2]) > 2500:
                     continue
                 t, created = Trivia.objects.update_or_create(
                     name = row[0],
@@ -29,11 +29,13 @@ class Command(BaseCommand):
                         "is_bonus": False
                     })
                 if not created:
-                    first = QuestionAndAnswer.objects.filter(parent=t)[0]
-                    if first.question_text != row[2] or first.answer != row[3]:
-                        [x.delete() for x in QuestionAndAnswer.objects.filter(parent=t)]
-                    else:
-                         continue
+                    q = QuestionAndAnswer.objects.filter(parent=t)
+                    if len(q) > 0:
+                        first = q[0]
+                        if first.question_text != row[2] or first.answer != row[3]:
+                            [x.delete() for x in QuestionAndAnswer.objects.filter(parent=t)]
+                        else:
+                            continue
                 c = QuestionAndAnswer.objects.create(
                     parent = t,
                     question_text = row[2],

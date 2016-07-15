@@ -88,7 +88,7 @@ def search(request):
             'error': "Query too short",
             'result': None
         })
-    regex = term + r'(?:\W|\p{P}|$)'
+    regex = term + r'(?:\y)'
     query = QuestionAndAnswer.objects.filter(Q(answer__iregex=regex)|Q(question_text__iregex=regex))
     query = sorted(query, key=lambda x: term.lower() in x.question_text.lower())
     entities = [x.named_entities() for x in query if term.lower() in x.answer.lower()]
