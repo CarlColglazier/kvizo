@@ -8,7 +8,7 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 with open('./.env') as f:
-    if f.readline().strip == "on":
+    if f.readline().strip() == "on":
         DEBUG=True
     else:
         DEBUG=False
