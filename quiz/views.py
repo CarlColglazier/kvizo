@@ -157,5 +157,4 @@ def index(request):
     context = {
         "stats": sorted(r_list, key=lambda x: x['ratio']*(1-x['total']/total)**2, reverse=True)
     }
-    print(context)
     return render(request, 'home.html', context)

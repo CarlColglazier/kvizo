@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 import string
+import re
 
 table = str.maketrans(string.punctuation, "                                ")
+re_default_answer = re.compile('[^\[]*')
 
 class Trivia(models.Model):
     """
@@ -126,6 +128,9 @@ class QuestionAndAnswer(models.Model):
                     if a not in banned:
                         phrases.append(a)
         return phrases
+
+    def default_answer(self):
+        return re_default_answer.match(self.answer).group(0).strip()
 
 
 class Response(models.Model):
