@@ -235,8 +235,12 @@ if (parser.pathname == "/quizzer") {
         });
         document.getElementById('subcategory').innerHTML = options.join();
     });
-    document.getElementById('correct').addEventListener('click', t.correct);
-    document.getElementById('missed').addEventListener('click', t.missed);
+    document.getElementById('correct').addEventListener('click', function() {
+        t.correct();
+    });
+    document.getElementById('missed').addEventListener('click', function() {
+        t.missed();
+    });
     document.addEventListener('keypress', function(e) {
         switch (e.key) {
         case "k":
