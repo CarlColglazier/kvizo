@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if user.is_anonymous %}
+<p>Please log in. If you do not have an account, talk to Carl.</p>
+{% else %}
 <table><tbody>
     <th><td>Ratio</td><td>Correct</td><td>Total</td></th>
     {% for r in stats %}
     <tr><td>{{r.category}}</td><td>{{r.ratio}}</td><td>{{r.correct}}</td><td>{{r.total}}</td></tr>
     {% endfor %}
 </tbody></table>
+{% endif %}
 {% endblock %}

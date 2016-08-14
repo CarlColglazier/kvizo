@@ -3,10 +3,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from quiz.models import Trivia, QuestionAndAnswer, Response
 from random import randint
-from django.db.models import Count, Q
 from difflib import SequenceMatcher
+from quiz.utils import Search, User
 
-
+@login_required
 def result(request):
     """
     POST requests are sent here after a trivia item is either responded to
@@ -44,6 +44,7 @@ def result(request):
     #TODO: Handle response on the client.
     return JsonResponse({})
 
+@login_required
 def random(request):
     """
     Responds with a randomly selected trivia item.
@@ -67,12 +68,14 @@ def random(request):
     return JsonResponse({'error':None,
                          'result':random_obj.dictionary()})
 
+@login_required
 def search_page(request):
     """
     Provides the search page.
     """
     return render(request, 'quizzer/search.html', {})
-    
+
+@login_required
 def search(request):
     """
     Searches the database for corresponding questions and answers.
@@ -88,33 +91,16 @@ def search(request):
             'error': "Query too short",
             'result': None
         })
-    regex = term + r'(?:\y)'
-    query = QuestionAndAnswer.objects.filter(Q(answer__iregex=regex)|Q(question_text__iregex=regex))
-    query = sorted(query, key=lambda x: term.lower() in x.question_text.lower())
-    entities = [x.named_entities() for x in query if term.lower() in x.answer.lower()]
-    named = {}
-    for en in entities:
-        for e in en:
-            if e in named:
-                named[e] += 1
-            else:
-                done = False
-                for k in named.keys():
-                    if SequenceMatcher(None, k, e).ratio() > 0.65:
-                        named[k] += 1
-                        done = True
-                        break
-                if done == False:
-                    named[e] = 0
-                #print(named.keys())
-    entities = sorted([x for x in named.items() if x[1] > 0], key=lambda x: x[1], reverse=True)
-    entities = [{"term": x[0], "num": x[1]} for x in entities]
-    results = [x.parent.dictionary() for x in query]
+    if "limit" in request.GET and request.GET.get('limit') == "false":
+        limit = 100
+    else:
+        limit = 25
+    c = Search(term, limit)
     return JsonResponse({
         'error': None,
         'result': {
-            "items": results,
-            "entities": entities
+            "items": [x.dictionary() for x in c.results()],
+            "entities": c.answer_entities()
         }
     })
 
@@ -130,31 +116,9 @@ def index(request):
     """
     Home page.
     """
-    res_all = [x['trivia_id'] for x in Response.objects.values('trivia_id')]
-    all = Trivia.objects.filter(pk__in=res_all).values('category').annotate(count=Count('category'))
-    res_cor = [x['trivia_id'] for x in Response.objects.filter(points__gt=0).values('trivia_id')]
-    cor = Trivia.objects.filter(pk__in=res_cor).values('category').annotate(count=Count('category'))
-    correct = {}
-    ratios = {}
-    totals = {}
-    r_list = []
-    for o in cor:
-        correct[o['category']] = o['count']
-    total = 0
-    for o in all:
-        c = 0
-        if o['category'] in correct:
-            c = correct[o['category']]
-            ratios[o['category']] = 1.0 * correct[o['category']] / o['count']
-        else:
-            ratios[o['category']] = 0.0
-        total += o['count']
-        r_list.append({
-            "category": o['category'],
-            "ratio": ratios[o['category']],
-            "correct": c,
-            "total": o['count']})
+    user = User(request.user)
+    s = user.stats()
     context = {
-        "stats": sorted(r_list, key=lambda x: x['ratio']*(1-x['total']/total)**2, reverse=True)
+        "stats": sorted(s['list'], key=lambda x: x['ratio']*(1-x['total']/s['total'])**2, reverse=True)
     }
     return render(request, 'home.html', context)
