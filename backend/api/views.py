@@ -25,5 +25,4 @@ class RandomTossupView(viewsets.ReadOnlyModelViewSet):
             )),
             10)
     def get_queryset(self):
-        print(self)
         return Tossup.objects.all().filter(pk__in=self.pick_random_object())

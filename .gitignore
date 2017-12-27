@@ -94,3 +94,4 @@ secret_key.txt
 .env
 /static
 backend/kvizo/secret.py
+start.sh
