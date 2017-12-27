@@ -1,5 +1,7 @@
 # KVIZO
 
+![Kvizo demo](demo.gif)
+
 Kvizo is a practice and learning tool for adademic quiz bowl. It
 currently supports the following features:
 
