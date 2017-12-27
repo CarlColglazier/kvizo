@@ -1,0 +1,40 @@
+.pure-g {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+@media (min-width: 768px) {
+  .pure-g {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .pure-g {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .pure-g {
+    width: 1170px;
+  }
+}
+
+button.green {
+  color: white;
+  background: rgb(28, 184, 65); /* this is a green */
+}
+
+button.red {
+  color: white;
+  background: rgb(202, 60, 60); /* this is a maroon */
+}
