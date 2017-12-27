@@ -1,0 +1,12 @@
+Django==2.0
+django-cors-headers==2.1.0
+django-filter==1.1.0
+djangorestframework==3.7.7
+ftfy==5.2.0
+numpy==1.13.3
+pandas==0.21.1
+psycopg2==2.7.3.2
+python-dateutil==2.6.1
+pytz==2017.3
+six==1.11.0
+wcwidth==0.1.7
